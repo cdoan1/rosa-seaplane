@@ -376,7 +376,10 @@ if [[ "$_have_customer_creds" == "true" ]]; then
       -X POST -H "Content-Type: application/json" \
       -d "{\"accountId\":\"${E2E_CUSTOMER_ACCOUNT_ID}\",\"privileged\":true}" \
       "${BASE_URL}/api/v0/accounts"; then
-      AWS_PROFILE="${CUSTOMER_AWS_PROFILE}" ROSA_LABEL_FILTER="${ROSA_LABEL_FILTER}" make test-e2e-rosa-cli || rosa_cli_rc=$?
+      # test-e2e-rosa-cli lacks a ginkgo prerequisite in the api repo's Makefile;
+    # it normally gets built by test-e2e-api, which we skip. Build it explicitly.
+    make -C "${WORK_DIR}/api" hack/tools/bin/ginkgo
+    AWS_PROFILE="${CUSTOMER_AWS_PROFILE}" ROSA_LABEL_FILTER="${ROSA_LABEL_FILTER}" make test-e2e-rosa-cli || rosa_cli_rc=$?
     else
       echo "ERROR: allowlisting customer account failed" >&2
       rosa_cli_rc=1
