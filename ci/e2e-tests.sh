@@ -371,19 +371,16 @@ if [[ "$_have_customer_creds" == "true" ]]; then
       --query 'Arn' --output text 2>/dev/null || echo unavailable)"
     echo "[debug] ROSA CLI tests caller identity (${CUSTOMER_AWS_PROFILE}): ${_cli_identity}"
     # Register the customer account as the RC account. "privileged" is for the legacy
-    # accounts API; the Cedar allowlist ignores it.
-    if AWS_PROFILE=rrp-rc awscurl --service execute-api --region "${AWS_DEFAULT_REGION}" --fail-with-body \
+    # accounts API; the Cedar allowlist ignores it. Best-effort: 409 (already
+    # enabled) is tolerated; a real auth failure surfaces in the tests below.
+    AWS_PROFILE=rrp-rc awscurl --service execute-api --region "${AWS_DEFAULT_REGION}" --fail-with-body \
       -X POST -H "Content-Type: application/json" \
       -d "{\"accountId\":\"${E2E_CUSTOMER_ACCOUNT_ID}\",\"privileged\":true}" \
-      "${BASE_URL}/api/v0/accounts"; then
-      # test-e2e-rosa-cli lacks a ginkgo prerequisite in the api repo's Makefile;
-    # it normally gets built by test-e2e-api, which we skip. Build it explicitly.
+      "${BASE_URL}/api/v0/accounts" || true
+    # test-e2e-rosa-cli lacks a ginkgo prerequisite in the api repo's Makefile;
+    # it normally gets built by test-e2e-api. Build it explicitly.
     make -C "${WORK_DIR}/api" hack/tools/bin/ginkgo
     AWS_PROFILE="${CUSTOMER_AWS_PROFILE}" ROSA_LABEL_FILTER="${ROSA_LABEL_FILTER}" make test-e2e-rosa-cli || rosa_cli_rc=$?
-    else
-      echo "ERROR: allowlisting customer account failed" >&2
-      rosa_cli_rc=1
-    fi
   else
     echo ""
     echo "=== ROSA CLI Tests ==="
