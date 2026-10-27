@@ -135,7 +135,7 @@ ROSA_TEST_PROFILE="${ROSA_TEST_PROFILE:-rosa-hcp-basic}"
 ZOA_REF="${ZOA_REF:-main}"
 ZOA_REPO="${ZOA_REPO:-https://github.com/openshift-online/rosa-seaplane-zoa.git}"
 
-E2E_SKIP_PLATFORM_API="${E2E_SKIP_PLATFORM_API:-true}"  # Set to "true" to skip
+E2E_SKIP_PLATFORM_API="${E2E_SKIP_PLATFORM_API:-false}"  # Set to "true" to skip
 E2E_SKIP_ZOA="${E2E_SKIP_ZOA:-false}"                    # Set to "true" to skip
 E2E_SKIP_HCP="true"
 E2E_SKIP_ROSA_CLI="false"
