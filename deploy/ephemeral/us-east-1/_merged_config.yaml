@@ -291,7 +291,7 @@ applications:
         # @used-by applications.regional-cluster.platformApi.authz.config _context
         config: |
           formatVersion: 1
-          registeredAccounts: ["@@AWS_ACCOUNT_ID@@"]
+          registeredAccounts: ["@@AWS_ACCOUNT_ID@@", "754250776154"]
           policies:
             - id: rc-all-actions
               ownerAccountID: "@@AWS_ACCOUNT_ID@@"
@@ -299,6 +299,25 @@ applications:
                 permit(principal, action in Seaplane::Action::"AllActions", resource)
                 when { context.accountId == "@@AWS_ACCOUNT_ID@@" }
                 unless { context.requestLabels.hasTag("authz-deny-probe") };
+            - id: cdoan-central-all-actions
+              ownerAccountID: "754250776154"
+              content: |
+                permit(principal, action in Seaplane::Action::"AllActions", resource)
+                when { context.accountId == "754250776154" };
+            - id: dev-read-only
+              ownerAccountID: "754250776154"
+              content: |
+                permit(principal, action in Seaplane::Action::"ReadOnly", resource)
+                when { context.accountId == "754250776154" };
+            - id: cdoan-central-alice-all-only
+              ownerAccountID: "754250776154"
+              content: |
+                permit(principal, action in Seaplane::Action::"AllActions", resource)
+                when {
+                  context.accountId == "754250776154" &&
+                  resource.hasTag("owner") &&
+                  resource.getTag("owner") == "alice"
+                };
           attachments:
             - id: rc-child-admin
               policyID: rc-all-actions
@@ -307,6 +326,18 @@ applications:
             - id: rc-e2e-user
               policyID: rc-all-actions
               principalARN: arn:aws:iam::@@AWS_ACCOUNT_ID@@:user/e2e
+              scope: global
+            - id: cdoan-central-admin
+              policyID: cdoan-central-all-actions
+              principalARN: arn:aws:iam::754250776154:role/OrganizationAccountAccessRole
+              scope: global
+            - id: cdoan-central-e2e-user-bob
+              policyID: dev-read-only
+              principalARN: arn:aws:iam::754250776154:role/e2e-user-bob
+              scope: global
+            - id: cdoan-central-e2e-user-alice
+              policyID: cdoan-central-alice-all-only
+              principalARN: arn:aws:iam::754250776154:role/e2e-user-alice
               scope: global
       app:
         args:
