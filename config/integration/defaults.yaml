@@ -51,4 +51,4 @@ management_cluster_defaults:
 
 observability:
   pagerduty:
-    enabled: true
+    enabled: false

@@ -232,7 +232,7 @@ observability:
     # @doc observability.pagerduty.enabled Enable PagerDuty service provisioning for the region.
     # @used-by observability.pagerduty.enabled _context
     # @used-by observability.pagerduty.enabled pipeline-regional-cluster-inputs/terraform.json.j2
-    enabled: true
+    enabled: false
     # @doc observability.pagerduty.escalation_policy_id PagerDuty escalation policy ID for regional services.
     # @used-by observability.pagerduty.escalation_policy_id _context
     # @used-by observability.pagerduty.escalation_policy_id pipeline-regional-cluster-inputs/terraform.json.j2

@@ -23,7 +23,7 @@ platformApi:
 seaplane:
   oidcS3Bucket: PLACEHOLDER-overridden-by-terraform-output
 pagerduty:
-  enabled: true
+  enabled: false
 grafana:
   grafana.ini:
     auth.anonymous:
