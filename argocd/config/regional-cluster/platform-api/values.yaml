@@ -20,8 +20,8 @@ platformApi:
   app:
     name: platform-api
     image:
-      repository: quay.io/redhat-user-workloads/rosa-tenant/rosa-seaplane-api
-      tag: "f9871570f2207d94f6aa3ecf7ff6c901365f3fcc@sha256:f9114a8e5e0d250f4509e1ca3fb64ce15be8f5e1c306ff28dadef90f85d7bc93"
+      repository: quay.io/cdoan0/rosa-seaplane-api
+      tag: "latest"
       pullPolicy: Always
 
     # Application arguments
@@ -75,9 +75,15 @@ platformApi:
     scrapeTimeout: 10s
     labels: {}
 
+  # Authorization is mandatory. Caller grants belong in environment overrides.
   authz:
-    # Rendered from regional_cluster.authz_tables: {policies, global, regional}. Required.
-    tables: null
+    # Complete v1 bundle, delivered as text. Optional @@AWS_ACCOUNT_ID@@ and
+    # @@AWS_REGION@@ markers use trusted bootstrap identity without adding grants.
+    config: |
+      formatVersion: 1
+      registeredAccounts: []
+      policies: []
+      attachments: []
 
   # Rate Limiting configuration
   rateLimit:
