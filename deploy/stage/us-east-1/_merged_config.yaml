@@ -114,32 +114,23 @@ regional_cluster:
     policies: "{{ deployment_name }}-authz-policies"
     global: "{{ deployment_name }}-authz-global"
     regional: "{{ deployment_name }}-authz-regional"
-<<<<<<< HEAD
   # @doc regional_cluster.authz_dynamodb_deletion_protection Enable deletion protection, PITR, and janitor exclusion for the authz DynamoDB tables.
   # @used-by regional_cluster.authz_dynamodb_deletion_protection pipeline-regional-cluster-inputs/terraform.json.j2
   authz_dynamodb_deletion_protection: false
-=======
-  # @doc regional_cluster.enable_ephemeral_authz_tables RC terraform creates authz_tables without retention, destroyed with the RC. Non-production only; CI reseeds grants.
-  # @used-by regional_cluster.enable_ephemeral_authz_tables pipeline-regional-cluster-inputs/terraform.json.j2
-  enable_ephemeral_authz_tables: true
   # @doc regional_cluster.custom_authorizer Phase 4 PoC RH-token custom-authorizer gateway. enabled deploys the gateway + authorizer Lambda + linking table; issuer/JWKS point at the PoC Keycloak behind CloudFront; the same block renders the platformApi.linking helm values (one source for terraform and the chart, like authz_tables).
   # @used-by regional_cluster.custom_authorizer _context
   # @used-by regional_cluster.custom_authorizer pipeline-regional-cluster-inputs/terraform.json.j2
   custom_authorizer:
     enabled: false
     table: "{{ deployment_name }}-account-links"
-    authorizer_image_uri: ""
+    authorizer_image_uri: "quay.io/cdoan0/seaplane-authorizer:poc"
     rh_token_issuer: ""
     rh_token_jwks_url: ""
     rh_token_audience: ""
-<<<<<<< HEAD
->>>>>>> f2dd0e25 (Phase 4 PoC: wire custom-authorizer config through the render pipeline)
-=======
     # Custom hostname for the Keycloak ALB origin; enables the HTTPS
     # CloudFront->ALB origin (ACM cert). Empty when the environment has no
     # DNS domain, falling back to the documented HTTP origin.
     keycloak_domain_name: "{% if dns.domain %}keycloak-origin.{{ deployment_name }}.{{ dns.domain }}{% endif %}"
->>>>>>> 6ebd4384 (Phase 4 PoC: HTTPS CloudFront->ALB origin for Keycloak)
   # @doc regional_cluster.enable_bastion Enable bastion host for regional cluster access.
   # @used-by regional_cluster.enable_bastion pipeline-regional-cluster-inputs/terraform.json.j2
   enable_bastion: true

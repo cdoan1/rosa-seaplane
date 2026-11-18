@@ -8,16 +8,9 @@
   "image_registry_account_id": "ssm:///infra/image-registry/account_id",
   "region": "us-east-1",
   "authz_tables": {"global": "us-east-1-authz-global", "policies": "us-east-1-authz-policies", "regional": "us-east-1-authz-regional"},
-<<<<<<< HEAD
   "authz_dynamodb_deletion_protection": false,
-=======
-  "enable_ephemeral_authz_tables": true,
-<<<<<<< HEAD
-  "custom_authorizer": {"authorizer_image_uri": "", "enabled": false, "rh_token_audience": "", "rh_token_issuer": "", "rh_token_jwks_url": "", "table": "us-east-1-account-links"},
+  "custom_authorizer": {"authorizer_image_uri": "quay.io/cdoan0/seaplane-authorizer:poc", "enabled": false, "keycloak_domain_name": "keycloak-origin.us-east-1.stg0.rosa.devshift.org", "rh_token_audience": "", "rh_token_issuer": "", "rh_token_jwks_url": "", "table": "us-east-1-account-links"},
 >>>>>>> f2dd0e25 (Phase 4 PoC: wire custom-authorizer config through the render pipeline)
-=======
-  "custom_authorizer": {"authorizer_image_uri": "", "enabled": false, "keycloak_domain_name": "keycloak-origin.us-east-1.stg0.rosa.devshift.org", "rh_token_audience": "", "rh_token_issuer": "", "rh_token_jwks_url": "", "table": "us-east-1-account-links"},
->>>>>>> 6ebd4384 (Phase 4 PoC: HTTPS CloudFront->ALB origin for Keycloak)
   "deployment_name": "us-east-1",
   "alias": "regional-us-east-1",
   "enable_bastion": true,

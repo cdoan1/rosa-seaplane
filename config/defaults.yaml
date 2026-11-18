@@ -117,7 +117,7 @@ regional_cluster:
   custom_authorizer:
     enabled: false
     table: "{{ deployment_name }}-account-links"
-    authorizer_image_uri: ""
+    authorizer_image_uri: "quay.io/cdoan0/seaplane-authorizer:poc"
     rh_token_issuer: ""
     rh_token_jwks_url: ""
     rh_token_audience: ""
@@ -125,7 +125,6 @@ regional_cluster:
     # CloudFront->ALB origin (ACM cert). Empty when the environment has no
     # DNS domain, falling back to the documented HTTP origin.
     keycloak_domain_name: "{% if dns.domain %}keycloak-origin.{{ deployment_name }}.{{ dns.domain }}{% endif %}"
->>>>>>> 6ebd4384 (Phase 4 PoC: HTTPS CloudFront->ALB origin for Keycloak)
   # @doc regional_cluster.enable_bastion Enable bastion host for regional cluster access.
   # @used-by regional_cluster.enable_bastion pipeline-regional-cluster-inputs/terraform.json.j2
   enable_bastion: false
