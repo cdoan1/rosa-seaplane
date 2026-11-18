@@ -79,3 +79,14 @@ variable "linking_table_name" {
   default     = ""
   description = "Explicit linking table name; defaults to <name>-links."
 }
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "Public subnets for the internet-facing Keycloak ALB."
+}
+
+variable "keycloak_port" {
+  type        = number
+  default     = 8080
+  description = "Keycloak pod port (chart's keycloak.service.port)."
+}

@@ -1,0 +1,81 @@
+# Default values for the PoC Keycloak application (Phase 4).
+#
+# The Application is only rendered when keycloak.enabled is true; enable per
+# environment together with regional_cluster.custom_authorizer.enabled. The
+# hostname and targetGroup.arn are overridden by the ApplicationSet
+# valuesObject from terraform outputs (keycloak_url,
+# keycloak_target_group_arn) threaded through cluster secret annotations.
+
+keycloak:
+  enabled: false
+
+  namespace: keycloak
+
+  app:
+    name: keycloak
+    image:
+      repository: quay.io/keycloak/keycloak
+      tag: "26.8.2"
+      pullPolicy: IfNotPresent
+
+    # Overridden by terraform output (keycloak_url) via the ApplicationSet.
+    hostname: ""
+
+    resources:
+      requests:
+        cpu: 250m
+        memory: 768Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+
+  postgres:
+    image:
+      repository: registry.redhat.io/rhel9/postgresql-16
+      tag: latest
+      pullPolicy: IfNotPresent
+    database: keycloak
+    storage:
+      size: 1Gi
+      className: ""
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
+
+  # PoC-only inline bootstrap credentials. When false, the environment must
+  # provide the keycloak-secrets Secret (external-secrets) containing
+  # KC_BOOTSTRAP_ADMIN_USERNAME, KC_BOOTSTRAP_ADMIN_PASSWORD,
+  # POSTGRESQL_USER, POSTGRESQL_PASSWORD.
+  createSecret: false
+  adminUsername: ""
+  adminPassword: ""
+  postgresUsername: "keycloak"
+  postgresPassword: ""
+
+  service:
+    port: 8080
+
+  # Overridden by terraform output (keycloak_target_group_arn).
+  targetGroup:
+    arn: ""
+    targetType: ip
+
+seaplane:
+  applicationName: keycloak
+  namespace: argocd
+  targetNamespace: keycloak
+  project: default
+
+  source:
+    repoURL: https://github.com/openshift-online/rosa-seaplane-api.git
+    targetRevision: main
+    path: keycloak/charts
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

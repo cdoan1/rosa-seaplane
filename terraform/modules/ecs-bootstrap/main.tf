@@ -211,6 +211,8 @@ resource "aws_ecs_task_definition" "bootstrap" {
               sre_alb_dns_name: "$SRE_ALB_DNS_NAME"
               sre_domain: "$SRE_DOMAIN"
               redis_endpoint: "$REDIS_ENDPOINT"
+              keycloak_url: "$KEYCLOAK_URL"
+              keycloak_target_group_arn: "$KEYCLOAK_TARGET_GROUP_ARN"
               vpc_id: "$VPC_ID"
           type: Opaque
           stringData:

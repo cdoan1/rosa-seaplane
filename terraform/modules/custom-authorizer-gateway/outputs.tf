@@ -21,3 +21,12 @@ output "alb_arn" {
 output "target_group_arn" {
   value = aws_lb_target_group.platform.arn
 }
+
+output "keycloak_url" {
+  value       = "https://${aws_cloudfront_distribution.keycloak.domain_name}"
+  description = "Public Keycloak URL — the token issuer (KC_HOSTNAME / RH_TOKEN_ISSUER)."
+}
+
+output "keycloak_target_group_arn" {
+  value = aws_lb_target_group.keycloak.arn
+}

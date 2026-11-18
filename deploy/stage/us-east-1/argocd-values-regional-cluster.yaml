@@ -35,6 +35,8 @@ platformApi:
     readTimeoutSeconds: 30
     writeTimeoutSeconds: 30
     idleTimeoutSeconds: 60
+keycloak:
+  enabled: false
 seaplane:
   oidcS3Bucket: PLACEHOLDER-overridden-by-terraform-output
 pagerduty:

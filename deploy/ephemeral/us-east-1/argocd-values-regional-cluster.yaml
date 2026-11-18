@@ -35,6 +35,8 @@ platformApi:
     readTimeoutSeconds: 30
     writeTimeoutSeconds: 30
     idleTimeoutSeconds: 60
+keycloak:
+  enabled: false
 seaplane:
   oidcS3Bucket: hypershift--regional-oidc-ssm:///infra/us-east-1/rc/account_id
 pagerduty:

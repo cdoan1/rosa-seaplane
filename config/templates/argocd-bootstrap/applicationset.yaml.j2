@@ -86,6 +86,12 @@ spec:
                   oidcIssuerBaseURL: 'https://{{ '{{ .metadata.annotations.oidc_cloudfront_domain }}' }}'
               rateLimit:
                 redisEndpoint: '{{ '{{ .metadata.annotations.redis_endpoint }}' }}'
+            # Keycloak (Phase 4 PoC RH-token issuer) values
+            keycloak:
+              app:
+                hostname: '{{ '{{ .metadata.annotations.keycloak_url }}' }}'
+              targetGroup:
+                arn: '{{ '{{ .metadata.annotations.keycloak_target_group_arn }}' }}'
             # Seaplane Operator values (keys must match chart's values.yaml structure)
             seaplane:
               oidcS3Bucket: '{{ '{{ .metadata.annotations.oidc_bucket_name }}' }}'

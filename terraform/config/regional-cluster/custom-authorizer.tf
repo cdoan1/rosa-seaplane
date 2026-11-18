@@ -46,6 +46,7 @@ module "custom_authorizer_gateway" {
   regional_id            = var.regional_id
   vpc_id                 = module.vpc.vpc_id
   private_subnet_ids     = module.vpc.private_subnet_ids
+  public_subnet_ids      = module.vpc.public_subnet_ids
   node_security_group_id = module.regional_cluster.node_security_group_id
   cluster_name           = module.regional_cluster.cluster_name
 
@@ -121,4 +122,14 @@ output "custom_authorizer_invoke_url" {
 output "custom_authorizer_linking_table" {
   value       = local.enable_custom_authorizer_gateway ? module.custom_authorizer_gateway[0].linking_table_name : ""
   description = "DynamoDB linking table name (empty when disabled)."
+}
+
+output "keycloak_url" {
+  value       = local.enable_custom_authorizer_gateway ? module.custom_authorizer_gateway[0].keycloak_url : ""
+  description = "Public Keycloak URL — the PoC token issuer (empty when disabled)."
+}
+
+output "keycloak_target_group_arn" {
+  value       = local.enable_custom_authorizer_gateway ? module.custom_authorizer_gateway[0].keycloak_target_group_arn : ""
+  description = "Keycloak ALB target group ARN for the chart's TargetGroupBinding (empty when disabled)."
 }

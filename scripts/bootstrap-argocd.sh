@@ -79,6 +79,8 @@ if [[ "$CLUSTER_TYPE" == "regional-cluster" ]]; then
     SRE_THANOS_TARGET_GROUP_ARN=$(echo "$OUTPUTS" | jq -r '.sre_thanos_target_group_arn.value // ""')
     SRE_ALB_DNS_NAME=$(echo "$OUTPUTS" | jq -r '.sre_alb_dns_name.value // ""')
     SRE_DOMAIN=$(echo "$OUTPUTS" | jq -r '.sre_domain.value // ""')
+    KEYCLOAK_URL=$(echo "$OUTPUTS" | jq -r '.keycloak_url.value // ""')
+    KEYCLOAK_TARGET_GROUP_ARN=$(echo "$OUTPUTS" | jq -r '.keycloak_target_group_arn.value // ""')
     _REDIS_HOST=$(echo "$OUTPUTS" | jq -r '.seaplane_redis_endpoint.value // ""')
     _REDIS_PORT=$(echo "$OUTPUTS" | jq -r '.seaplane_redis_port.value // ""')
     if [[ -n "$_REDIS_HOST" && -n "$_REDIS_PORT" ]]; then
@@ -102,6 +104,8 @@ else
     SRE_ALB_DNS_NAME=""
     SRE_DOMAIN=""
     REDIS_ENDPOINT=""
+    KEYCLOAK_URL=""
+    KEYCLOAK_TARGET_GROUP_ARN=""
 fi
 
 RHOBS_API_URL="${RHOBS_API_URL:-}"
@@ -136,6 +140,8 @@ OVERRIDES_JSON=$(jq -nc \
   --arg sre_alb_dns_name "$SRE_ALB_DNS_NAME" \
   --arg sre_domain "$SRE_DOMAIN" \
   --arg redis_endpoint "$REDIS_ENDPOINT" \
+  --arg keycloak_url "$KEYCLOAK_URL" \
+  --arg keycloak_target_group_arn "$KEYCLOAK_TARGET_GROUP_ARN" \
   '{
     containerOverrides: [{
       name: "bootstrap",
@@ -166,7 +172,9 @@ OVERRIDES_JSON=$(jq -nc \
         {name: "SRE_THANOS_TARGET_GROUP_ARN", value: $sre_thanos_target_group_arn},
         {name: "SRE_ALB_DNS_NAME", value: $sre_alb_dns_name},
         {name: "SRE_DOMAIN", value: $sre_domain},
-        {name: "REDIS_ENDPOINT", value: $redis_endpoint}
+        {name: "REDIS_ENDPOINT", value: $redis_endpoint},
+        {name: "KEYCLOAK_URL", value: $keycloak_url},
+        {name: "KEYCLOAK_TARGET_GROUP_ARN", value: $keycloak_target_group_arn}
       ]
     }]
   }')
