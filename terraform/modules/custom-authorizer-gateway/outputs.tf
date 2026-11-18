@@ -30,3 +30,12 @@ output "keycloak_url" {
 output "keycloak_target_group_arn" {
   value = aws_lb_target_group.keycloak.arn
 }
+
+output "console_url" {
+  value       = "http://${aws_lb.console.dns_name}"
+  description = "Public PoC console URL (HTTP; PoC simplification)."
+}
+
+output "console_target_group_arn" {
+  value = aws_lb_target_group.console.arn
+}

@@ -92,6 +92,10 @@ spec:
                 hostname: '{{ '{{ .metadata.annotations.keycloak_url }}' }}'
               targetGroup:
                 arn: '{{ '{{ .metadata.annotations.keycloak_target_group_arn }}' }}'
+            # Console (Phase 4 PoC web UI) values
+            console:
+              targetGroup:
+                arn: '{{ '{{ .metadata.annotations.console_target_group_arn }}' }}'
             # Seaplane Operator values (keys must match chart's values.yaml structure)
             seaplane:
               oidcS3Bucket: '{{ '{{ .metadata.annotations.oidc_bucket_name }}' }}'

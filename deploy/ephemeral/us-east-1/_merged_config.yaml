@@ -341,6 +341,10 @@ applications:
       # @doc applications.regional-cluster.keycloak.enabled Deploy the PoC Keycloak (Phase 4 RH-token issuer) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; hostname and target group come from terraform outputs via ApplicationSet annotations.
       # @used-by applications.regional-cluster.keycloak.enabled _context
       enabled: false
+    console:
+      # @doc applications.regional-cluster.console.enabled Deploy the PoC web console (Phase 4) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; the target group comes from terraform output via ApplicationSet annotations.
+      # @used-by applications.regional-cluster.console.enabled _context
+      enabled: false
     seaplane:
       # @doc applications.regional-cluster.seaplane.oidcS3Bucket S3 bucket name the Seaplane Operator writes OIDC discovery documents to.
       # @used-by applications.regional-cluster.seaplane.oidcS3Bucket _context

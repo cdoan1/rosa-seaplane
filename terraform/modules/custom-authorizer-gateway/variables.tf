@@ -90,3 +90,9 @@ variable "keycloak_port" {
   default     = 8080
   description = "Keycloak pod port (chart's keycloak.service.port)."
 }
+
+variable "console_port" {
+  type        = number
+  default     = 8080
+  description = "Console pod port (chart's console.service.port)."
+}

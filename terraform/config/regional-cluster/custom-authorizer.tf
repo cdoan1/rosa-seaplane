@@ -133,3 +133,13 @@ output "keycloak_target_group_arn" {
   value       = local.enable_custom_authorizer_gateway ? module.custom_authorizer_gateway[0].keycloak_target_group_arn : ""
   description = "Keycloak ALB target group ARN for the chart's TargetGroupBinding (empty when disabled)."
 }
+
+output "console_url" {
+  value       = local.enable_custom_authorizer_gateway ? module.custom_authorizer_gateway[0].console_url : ""
+  description = "Public PoC console URL (empty when disabled)."
+}
+
+output "console_target_group_arn" {
+  value       = local.enable_custom_authorizer_gateway ? module.custom_authorizer_gateway[0].console_target_group_arn : ""
+  description = "Console ALB target group ARN for the chart's TargetGroupBinding (empty when disabled)."
+}

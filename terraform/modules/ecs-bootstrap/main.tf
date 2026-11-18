@@ -213,6 +213,8 @@ resource "aws_ecs_task_definition" "bootstrap" {
               redis_endpoint: "$REDIS_ENDPOINT"
               keycloak_url: "$KEYCLOAK_URL"
               keycloak_target_group_arn: "$KEYCLOAK_TARGET_GROUP_ARN"
+              console_url: "$CONSOLE_URL"
+              console_target_group_arn: "$CONSOLE_TARGET_GROUP_ARN"
               vpc_id: "$VPC_ID"
           type: Opaque
           stringData:

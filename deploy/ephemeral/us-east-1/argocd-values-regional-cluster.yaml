@@ -37,6 +37,8 @@ platformApi:
     idleTimeoutSeconds: 60
 keycloak:
   enabled: false
+console:
+  enabled: false
 seaplane:
   oidcS3Bucket: hypershift--regional-oidc-ssm:///infra/us-east-1/rc/account_id
 pagerduty:
