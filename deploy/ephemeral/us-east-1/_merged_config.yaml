@@ -346,9 +346,16 @@ applications:
       # @used-by applications.regional-cluster.keycloak.enabled _context
       enabled: false
     console:
-      # @doc applications.regional-cluster.console.enabled Deploy the PoC web console (Phase 4) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; the target group comes from terraform output via ApplicationSet annotations.
+      # @doc applications.regional-cluster.console.enabled Deploy the PoC web console (Phase 4) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; the target group and runtime config come from terraform outputs via ApplicationSet annotations.
       # @used-by applications.regional-cluster.console.enabled _context
       enabled: false
+      config:
+        # @doc applications.regional-cluster.console.config.oidcIssuer Maps regional_cluster.custom_authorizer.rh_token_issuer into the console's runtime config (the token issuer the PKCE client authenticates against).
+        # @used-by applications.regional-cluster.console.config.oidcIssuer _context
+        oidcIssuer: "{{ regional_cluster.custom_authorizer.rh_token_issuer }}"
+        # @doc applications.regional-cluster.console.config.oidcClientId The public PKCE OIDC client the console uses to sign in. Not a secret (public client; the Keycloak realm must require PKCE for it).
+        # @used-by applications.regional-cluster.console.config.oidcClientId _context
+        oidcClientId: seaplane-console
     seaplane:
       # @doc applications.regional-cluster.seaplane.oidcS3Bucket S3 bucket name the Seaplane Operator writes OIDC discovery documents to.
       # @used-by applications.regional-cluster.seaplane.oidcS3Bucket _context

@@ -81,6 +81,7 @@ if [[ "$CLUSTER_TYPE" == "regional-cluster" ]]; then
     SRE_DOMAIN=$(echo "$OUTPUTS" | jq -r '.sre_domain.value // ""')
     KEYCLOAK_URL=$(echo "$OUTPUTS" | jq -r '.keycloak_url.value // ""')
     CONSOLE_URL=$(echo "$OUTPUTS" | jq -r '.console_url.value // ""')
+    CUSTOM_AUTHORIZER_INVOKE_URL=$(echo "$OUTPUTS" | jq -r '.custom_authorizer_invoke_url.value // ""')
     CONSOLE_TARGET_GROUP_ARN=$(echo "$OUTPUTS" | jq -r '.console_target_group_arn.value // ""')
     KEYCLOAK_TARGET_GROUP_ARN=$(echo "$OUTPUTS" | jq -r '.keycloak_target_group_arn.value // ""')
     _REDIS_HOST=$(echo "$OUTPUTS" | jq -r '.seaplane_redis_endpoint.value // ""')
@@ -110,6 +111,7 @@ else
     KEYCLOAK_TARGET_GROUP_ARN=""
     CONSOLE_URL=""
     CONSOLE_TARGET_GROUP_ARN=""
+    CUSTOM_AUTHORIZER_INVOKE_URL=""
 fi
 
 RHOBS_API_URL="${RHOBS_API_URL:-}"
@@ -148,6 +150,7 @@ OVERRIDES_JSON=$(jq -nc \
   --arg keycloak_target_group_arn "$KEYCLOAK_TARGET_GROUP_ARN" \
   --arg console_url "$CONSOLE_URL" \
   --arg console_target_group_arn "$CONSOLE_TARGET_GROUP_ARN" \
+  --arg custom_authorizer_invoke_url "$CUSTOM_AUTHORIZER_INVOKE_URL" \
   '{
     containerOverrides: [{
       name: "bootstrap",
@@ -182,7 +185,8 @@ OVERRIDES_JSON=$(jq -nc \
         {name: "KEYCLOAK_URL", value: $keycloak_url},
         {name: "KEYCLOAK_TARGET_GROUP_ARN", value: $keycloak_target_group_arn},
         {name: "CONSOLE_URL", value: $console_url},
-        {name: "CONSOLE_TARGET_GROUP_ARN", value: $console_target_group_arn}
+        {name: "CONSOLE_TARGET_GROUP_ARN", value: $console_target_group_arn},
+        {name: "CUSTOM_AUTHORIZER_INVOKE_URL", value: $custom_authorizer_invoke_url}
       ]
     }]
   }')
