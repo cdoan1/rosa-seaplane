@@ -108,3 +108,9 @@ variable "regional_hosted_zone_id" {
   default     = null
   description = "Route53 zone for the Keycloak origin hostname and cert validation."
 }
+
+variable "cors_allowed_origin" {
+  type        = string
+  default     = ""
+  description = "Allowed CORS origin for the gateway. Empty (default) uses the console's origin; set explicitly (e.g. '*') to override."
+}
