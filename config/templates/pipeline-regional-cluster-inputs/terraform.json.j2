@@ -9,6 +9,7 @@
   "region": "{{ aws_region }}",
   "authz_tables": {{ regional_cluster.authz_tables | default(none) | tojson }},
   "enable_ephemeral_authz_tables": {{ regional_cluster.enable_ephemeral_authz_tables | default(false) | tojson }},
+  "custom_authorizer": {{ regional_cluster.custom_authorizer | default(none) | tojson }},
   "deployment_name": "{{ deployment_name }}",
   "alias": "regional-{{ aws_region }}",
   "enable_bastion": {{ regional_cluster.enable_bastion | default(false) | tojson }},

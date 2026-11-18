@@ -20,6 +20,11 @@ platformApi:
       policies: us-east-1-authz-policies
       global: us-east-1-authz-global
       regional: us-east-1-authz-regional
+  linking:
+    table: us-east-1-account-links
+    rhTokenIssuer: ''
+    rhTokenJwksUrl: ''
+    rhTokenAudience: ''
   app:
     args:
       defaultClusterExpiration: ''

@@ -120,6 +120,16 @@ regional_cluster:
   # @doc regional_cluster.enable_ephemeral_authz_tables RC terraform creates authz_tables without retention, destroyed with the RC. Non-production only; CI reseeds grants.
   # @used-by regional_cluster.enable_ephemeral_authz_tables pipeline-regional-cluster-inputs/terraform.json.j2
   enable_ephemeral_authz_tables: true
+  # @doc regional_cluster.custom_authorizer Phase 4 PoC RH-token custom-authorizer gateway. enabled deploys the gateway + authorizer Lambda + linking table; issuer/JWKS point at the PoC Keycloak behind CloudFront; the same block renders the platformApi.linking helm values (one source for terraform and the chart, like authz_tables).
+  # @used-by regional_cluster.custom_authorizer _context
+  # @used-by regional_cluster.custom_authorizer pipeline-regional-cluster-inputs/terraform.json.j2
+  custom_authorizer:
+    enabled: false
+    table: "{{ deployment_name }}-account-links"
+    authorizer_image_uri: ""
+    rh_token_issuer: ""
+    rh_token_jwks_url: ""
+    rh_token_audience: ""
   # @doc regional_cluster.enable_bastion Enable bastion host for regional cluster access.
   # @used-by regional_cluster.enable_bastion pipeline-regional-cluster-inputs/terraform.json.j2
   enable_bastion: true
@@ -309,6 +319,13 @@ applications:
         # @doc applications.regional-cluster.platformApi.authz.tables Maps regional_cluster.authz_tables into the platform-api AUTHZ_*_TABLE env vars, so table names have one source. Helm rejects null.
         # @used-by applications.regional-cluster.platformApi.authz.tables _context
         tables: "{{ regional_cluster.authz_tables }}"
+      linking:
+        # @doc applications.regional-cluster.platformApi.linking Maps regional_cluster.custom_authorizer into the platform-api LINKING_TABLE / RH_TOKEN_* env vars (Phase 4 PoC account linking). Issuer, JWKS, and audience are configuration so the PoC Keycloak can be swapped for Red Hat SSO later.
+        # @used-by applications.regional-cluster.platformApi.linking _context
+        table: "{{ regional_cluster.custom_authorizer.table }}"
+        rhTokenIssuer: "{{ regional_cluster.custom_authorizer.rh_token_issuer }}"
+        rhTokenJwksUrl: "{{ regional_cluster.custom_authorizer.rh_token_jwks_url }}"
+        rhTokenAudience: "{{ regional_cluster.custom_authorizer.rh_token_audience }}"
       app:
         args:
           # @doc applications.regional-cluster.platformApi.app.args.defaultClusterExpiration Maps cluster_lifecycle.default_expiration into the platform-api --default-cluster-expiration flag.

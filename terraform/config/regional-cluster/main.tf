@@ -979,27 +979,3 @@ module "loki_infrastructure" {
   loki_namespace       = var.loki_namespace
   loki_service_account = var.loki_service_account
 }
-
-# =============================================================================
-# Custom-Authorizer API Gateway (Phase 4 PoC)
-#
-# Public REST API authenticated by the seaplane-authorizer Lambda
-# (RH token -> linked ARN), emitting the same identity headers as the
-# AWS_IAM gateway. Disabled by default; enable per environment.
-# =============================================================================
-
-module "custom_authorizer_gateway" {
-  count  = var.enable_custom_authorizer_gateway ? 1 : 0
-  source = "../../modules/custom-authorizer-gateway"
-
-  regional_id            = var.regional_id
-  vpc_id                 = module.vpc.vpc_id
-  private_subnet_ids     = module.vpc.private_subnet_ids
-  node_security_group_id = module.regional_cluster.node_security_group_id
-  cluster_name           = module.regional_cluster.cluster_name
-
-  authorizer_image_uri = var.custom_authorizer_image_uri
-  rh_token_issuer      = var.rh_token_issuer
-  rh_token_jwks_url    = var.rh_token_jwks_url
-  rh_token_audience    = var.rh_token_audience
-}
