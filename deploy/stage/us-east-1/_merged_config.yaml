@@ -390,9 +390,16 @@ applications:
       # @used-by applications.regional-cluster.keycloak.enabled _context
       enabled: false
     console:
-      # @doc applications.regional-cluster.console.enabled Deploy the PoC web console (Phase 4) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; the target group comes from terraform output via ApplicationSet annotations.
+      # @doc applications.regional-cluster.console.enabled Deploy the PoC web console (Phase 4) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; the target group and runtime config come from terraform outputs via ApplicationSet annotations.
       # @used-by applications.regional-cluster.console.enabled _context
       enabled: false
+      config:
+        # @doc applications.regional-cluster.console.config.oidcIssuer Maps regional_cluster.custom_authorizer.rh_token_issuer into the console's runtime config (the token issuer the PKCE client authenticates against).
+        # @used-by applications.regional-cluster.console.config.oidcIssuer _context
+        oidcIssuer: "{{ regional_cluster.custom_authorizer.rh_token_issuer }}"
+        # @doc applications.regional-cluster.console.config.oidcClientId The public PKCE OIDC client the console uses to sign in. Not a secret (public client; the Keycloak realm must require PKCE for it).
+        # @used-by applications.regional-cluster.console.config.oidcClientId _context
+        oidcClientId: seaplane-console
     seaplane:
       ecrMirror:
         # @doc applications.regional-cluster.seaplane.ecrMirror Seaplane Operator ECR mirror configuration. When enabled, the operator reads ECR_MIRROR_* env vars to populate imageContentSources on every HostedCluster and redirect the ESO pull-secret target. All five ECR_MIRROR_* values (account, region, repository, sources, base-secret-name) are sourced from SSM parameters (/infra/image-registry/*) provisioned by rosa-seaplane-internal and threaded in as ArgoCD cluster secret annotations at bootstrap time. Must be set explicitly per environment; intentionally decoupled from management_cluster_defaults.enable_ecr_creds_sync.

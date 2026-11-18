@@ -93,6 +93,8 @@ spec:
                 arn: '{{ .metadata.annotations.keycloak_target_group_arn }}'
             # Console (Phase 4 PoC web UI) values
             console:
+              config:
+                apiBaseUrl: '{{ .metadata.annotations.custom_authorizer_invoke_url }}'
               targetGroup:
                 arn: '{{ .metadata.annotations.console_target_group_arn }}'
             # Seaplane Operator values (keys must match chart's values.yaml structure)
