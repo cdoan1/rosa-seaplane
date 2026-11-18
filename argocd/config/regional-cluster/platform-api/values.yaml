@@ -79,6 +79,14 @@ platformApi:
     # Rendered from regional_cluster.authz_tables: {policies, global, regional}. Required.
     tables: {}
 
+  # Rendered from regional_cluster.custom_authorizer: {table, rh_token_*}.
+  # Empty strings leave the linking endpoints mounted but returning 503.
+  linking:
+    table: ""
+    rhTokenIssuer: ""
+    rhTokenJwksUrl: ""
+    rhTokenAudience: ""
+
   # Rate Limiting configuration
   rateLimit:
     enabled: true

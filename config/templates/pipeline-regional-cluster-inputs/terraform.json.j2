@@ -9,6 +9,8 @@
   "region": "{{ aws_region }}",
   "authz_tables": {{ regional_cluster.authz_tables | default(none) | tojson }},
   "authz_dynamodb_deletion_protection": {{ regional_cluster.authz_dynamodb_deletion_protection | default(true) | tojson }},
+  "custom_authorizer": {{ regional_cluster.custom_authorizer | default(none) | tojson }},
+>>>>>>> f2dd0e25 (Phase 4 PoC: wire custom-authorizer config through the render pipeline)
   "deployment_name": "{{ deployment_name }}",
   "alias": "regional-{{ aws_region }}",
   "enable_bastion": {{ regional_cluster.enable_bastion | default(false) | tojson }},

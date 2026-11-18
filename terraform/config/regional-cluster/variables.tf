@@ -622,37 +622,3 @@ variable "region_ou_path" {
     error_message = "region_ou_path must not be empty. Set via buildspec (scripts/buildspec/provision-infra-rc.sh) from SSM parameter /infra/<env>/<region>/ou-path or /infra/region-ou-path (legacy)."
   }
 }
-
-# -----------------------------------------------------------------------------
-# Custom-Authorizer API Gateway (Phase 4 PoC)
-# -----------------------------------------------------------------------------
-
-variable "enable_custom_authorizer_gateway" {
-  type        = bool
-  default     = false
-  description = "Deploy the RH-token custom-authorizer API Gateway (Phase 4 PoC)."
-}
-
-variable "custom_authorizer_image_uri" {
-  type        = string
-  default     = ""
-  description = "ECR image URI of the seaplane-authorizer Lambda (required when enabled)."
-}
-
-variable "rh_token_issuer" {
-  type        = string
-  default     = ""
-  description = "Expected RH token issuer (the PoC Keycloak behind CloudFront)."
-}
-
-variable "rh_token_jwks_url" {
-  type        = string
-  default     = ""
-  description = "RH token issuer JWKS endpoint."
-}
-
-variable "rh_token_audience" {
-  type        = string
-  default     = ""
-  description = "Expected RH token audience (optional)."
-}
