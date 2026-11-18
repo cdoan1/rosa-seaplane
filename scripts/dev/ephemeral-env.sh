@@ -1409,10 +1409,13 @@ cmd_dump_env() {
         rc) cluster_type="regional" ;;
         mc) cluster_type="management" ;;
     esac
-    # Select environment (ready only)
-    select_env "STATE=ready" \
+    # Provisioning environments are selectable too: dump-env.sh is
+    # failure-tolerant (collection errors are logged, not fatal), so a
+    # partial dump from a still-provisioning (or failed) environment is
+    # still useful — e.g. diagnosing a pipeline failure mid-provision.
+    select_env "STATE=(ready|provisioning)" \
         "Select environment for dump-env:" \
-        "No ready environments found." \
+        "No ready or provisioning environments found." \
         true
 
     setup_aws_config
