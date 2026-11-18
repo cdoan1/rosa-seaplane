@@ -80,6 +80,8 @@ if [[ "$CLUSTER_TYPE" == "regional-cluster" ]]; then
     SRE_ALB_DNS_NAME=$(echo "$OUTPUTS" | jq -r '.sre_alb_dns_name.value // ""')
     SRE_DOMAIN=$(echo "$OUTPUTS" | jq -r '.sre_domain.value // ""')
     KEYCLOAK_URL=$(echo "$OUTPUTS" | jq -r '.keycloak_url.value // ""')
+    CONSOLE_URL=$(echo "$OUTPUTS" | jq -r '.console_url.value // ""')
+    CONSOLE_TARGET_GROUP_ARN=$(echo "$OUTPUTS" | jq -r '.console_target_group_arn.value // ""')
     KEYCLOAK_TARGET_GROUP_ARN=$(echo "$OUTPUTS" | jq -r '.keycloak_target_group_arn.value // ""')
     _REDIS_HOST=$(echo "$OUTPUTS" | jq -r '.seaplane_redis_endpoint.value // ""')
     _REDIS_PORT=$(echo "$OUTPUTS" | jq -r '.seaplane_redis_port.value // ""')
@@ -106,6 +108,8 @@ else
     REDIS_ENDPOINT=""
     KEYCLOAK_URL=""
     KEYCLOAK_TARGET_GROUP_ARN=""
+    CONSOLE_URL=""
+    CONSOLE_TARGET_GROUP_ARN=""
 fi
 
 RHOBS_API_URL="${RHOBS_API_URL:-}"
@@ -148,6 +152,8 @@ OVERRIDES_JSON=$(jq -nc \
   --arg ecr_mirror_ecr_repository "${ECR_MIRROR_ECR_REPOSITORY:-}" \
   --arg keycloak_url "$KEYCLOAK_URL" \
   --arg keycloak_target_group_arn "$KEYCLOAK_TARGET_GROUP_ARN" \
+  --arg console_url "$CONSOLE_URL" \
+  --arg console_target_group_arn "$CONSOLE_TARGET_GROUP_ARN" \
   '{
     containerOverrides: [{
       name: "bootstrap",
@@ -186,7 +192,9 @@ OVERRIDES_JSON=$(jq -nc \
         {name: "ECR_MIRROR_BASE_SECRET_NAME", value: $ecr_mirror_base_secret_name},
         {name: "ECR_MIRROR_ECR_REPOSITORY", value: $ecr_mirror_ecr_repository}
         {name: "KEYCLOAK_URL", value: $keycloak_url},
-        {name: "KEYCLOAK_TARGET_GROUP_ARN", value: $keycloak_target_group_arn}
+        {name: "KEYCLOAK_TARGET_GROUP_ARN", value: $keycloak_target_group_arn},
+        {name: "CONSOLE_URL", value: $console_url},
+        {name: "CONSOLE_TARGET_GROUP_ARN", value: $console_target_group_arn}
       ]
     }]
   }')

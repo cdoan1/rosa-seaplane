@@ -37,6 +37,8 @@ platformApi:
     idleTimeoutSeconds: 60
 keycloak:
   enabled: false
+console:
+  enabled: false
 seaplane:
   ecrMirror:
     enabled: false
