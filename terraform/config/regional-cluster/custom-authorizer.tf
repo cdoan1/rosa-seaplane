@@ -19,6 +19,7 @@ variable "custom_authorizer" {
     rh_token_issuer              = string
     rh_token_jwks_url            = string
     rh_token_audience            = optional(string, "")
+    keycloak_domain_name         = optional(string, "")
     authorizer_cache_ttl_seconds = optional(number, 300)
   })
   default = null
