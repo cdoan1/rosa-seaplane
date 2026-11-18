@@ -106,15 +106,27 @@ resource "aws_dynamodb_table" "linking" {
     name = "arn"
     type = "S"
   }
+  # Declared for the AccountIndex GSI below; the application writes
+  # accountId on every item (linking.Link.AccountID).
+  attribute {
+    name = "accountId"
+    type = "S"
+  }
 
-  # Query by subject is the only access pattern (ListLinks).
+  # Query by subject is the primary access pattern (ListLinks); the GSI
+  # covers account-scoped lookups (all links into one AWS account).
   global_secondary_index {
     name            = "AccountIndex"
     hash_key        = "accountId"
     projection_type = "ALL"
   }
 
-  deletion_protection_enabled = false # PoC
+  # Point-in-time recovery is cheap insurance; deletion protection stays
+  # off so PoC teardown works (production enables it — poc-decisions D-T4).
+  point_in_time_recovery {
+    enabled = true
+  }
+  deletion_protection_enabled = false
 
   tags = merge(local.common_tags, { Name = "${local.name}-links" })
 }

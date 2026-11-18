@@ -24,6 +24,10 @@ locals {
   }
 
   name = "${var.regional_id}-custom-auth-api"
+
+  # CORS defaults to the console's own origin (the browser only ever calls
+  # the gateway from the console). Wildcard only when explicitly requested.
+  cors_allowed_origin = var.cors_allowed_origin != "" ? var.cors_allowed_origin : "http://${aws_lb.console.dns_name}"
 }
 
 # -----------------------------------------------------------------------------
@@ -153,7 +157,7 @@ resource "aws_api_gateway_integration_response" "options_proxy" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Authorization,Content-Type,X-Seaplane-Arn,X-Rh-Token'"
     "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'${local.cors_allowed_origin}'"
   }
 
   depends_on = [aws_api_gateway_integration.options_proxy]
@@ -173,6 +177,12 @@ resource "aws_api_gateway_deployment" "main" {
       aws_api_gateway_integration.proxy.id,
       aws_api_gateway_integration.root.id,
       aws_api_gateway_authorizer.main.id,
+      # OPTIONS/CORS resources: a CORS change must trigger redeployment too.
+      aws_api_gateway_method.options_proxy.id,
+      aws_api_gateway_method.options_root.id,
+      aws_api_gateway_integration.options_proxy.id,
+      aws_api_gateway_integration.options_root.id,
+      aws_api_gateway_integration_response.options_proxy.id,
     ]))
   }
 
@@ -189,7 +199,7 @@ resource "aws_api_gateway_stage" "main" {
   dynamic "access_log_settings" {
     for_each = var.enable_access_logs ? [1] : []
     content {
-      destination_arn = aws_cloudwatch_log_group.api.arn
+      destination_arn = aws_cloudwatch_log_group.api[0].arn
       format          = "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"routeKey\":\"$context.routeKey\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
     }
   }
