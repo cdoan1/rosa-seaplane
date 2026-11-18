@@ -35,6 +35,8 @@ platformApi:
     readTimeoutSeconds: 30
     writeTimeoutSeconds: 30
     idleTimeoutSeconds: 60
+keycloak:
+  enabled: false
 seaplane:
   ecrMirror:
     enabled: false

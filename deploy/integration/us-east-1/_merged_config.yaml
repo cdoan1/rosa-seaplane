@@ -381,6 +381,10 @@ applications:
         readTimeoutSeconds: 30
         writeTimeoutSeconds: 30          # starts after headers are read; includes handler time
         idleTimeoutSeconds: 60
+    keycloak:
+      # @doc applications.regional-cluster.keycloak.enabled Deploy the PoC Keycloak (Phase 4 RH-token issuer) on the RC. Enable together with regional_cluster.custom_authorizer.enabled; hostname and target group come from terraform outputs via ApplicationSet annotations.
+      # @used-by applications.regional-cluster.keycloak.enabled _context
+      enabled: false
     seaplane:
       ecrMirror:
         # @doc applications.regional-cluster.seaplane.ecrMirror Seaplane Operator ECR mirror configuration. When enabled, the operator reads ECR_MIRROR_* env vars to populate imageContentSources on every HostedCluster and redirect the ESO pull-secret target. All five ECR_MIRROR_* values (account, region, repository, sources, base-secret-name) are sourced from SSM parameters (/infra/image-registry/*) provisioned by rosa-seaplane-internal and threaded in as ArgoCD cluster secret annotations at bootstrap time. Must be set explicitly per environment; intentionally decoupled from management_cluster_defaults.enable_ecr_creds_sync.
