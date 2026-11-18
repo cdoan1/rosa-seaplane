@@ -126,7 +126,7 @@ regional_cluster:
   custom_authorizer:
     enabled: false
     table: "{{ deployment_name }}-account-links"
-    authorizer_image_uri: ""
+    authorizer_image_uri: "quay.io/cdoan0/seaplane-authorizer:poc"
     rh_token_issuer: ""
     rh_token_jwks_url: ""
     rh_token_audience: ""
