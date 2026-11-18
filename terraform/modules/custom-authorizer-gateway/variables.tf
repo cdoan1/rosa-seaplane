@@ -96,3 +96,15 @@ variable "console_port" {
   default     = 8080
   description = "Console pod port (chart's console.service.port)."
 }
+
+variable "keycloak_domain_name" {
+  type        = string
+  default     = null
+  description = "Custom hostname for the Keycloak ALB origin (e.g. keycloak-origin.<deployment>.<domain>). When set (with regional_hosted_zone_id), CloudFront uses an https-only origin with an ACM cert."
+}
+
+variable "regional_hosted_zone_id" {
+  type        = string
+  default     = null
+  description = "Route53 zone for the Keycloak origin hostname and cert validation."
+}

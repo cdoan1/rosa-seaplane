@@ -24,6 +24,68 @@ data "aws_prefix_list" "cloudfront" {
 }
 
 # -----------------------------------------------------------------------------
+# HTTPS origin (optional): custom hostname + ACM cert on the ALB
+#
+# When keycloak_domain_name and regional_hosted_zone_id are set, the ALB gets
+# an HTTPS:443 listener with a DNS-validated ACM cert and CloudFront uses an
+# https-only origin — the entire chain is then TLS:
+#
+#   browser --HTTPS--> CloudFront (default cert) --HTTPS--> ALB --> Keycloak
+#
+# Without them, the origin falls back to HTTP (PoC-only, documented in the
+# file header). Gated on keycloak_domain_name only, mirroring the
+# api-gateway custom-domain pattern: regional_hosted_zone_id is derived from
+# a resource created in the same apply and is unknown at plan time.
+# -----------------------------------------------------------------------------
+
+resource "aws_acm_certificate" "keycloak_origin" {
+  count = var.keycloak_domain_name != null ? 1 : 0
+
+  domain_name       = var.keycloak_domain_name
+  validation_method = "DNS"
+
+  tags = merge(local.common_tags, {
+    Name = "${local.name}-keycloak-origin-cert"
+  })
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "keycloak_origin_cert_validation" {
+  count = var.keycloak_domain_name != null ? 1 : 0
+
+  zone_id         = var.regional_hosted_zone_id
+  name            = tolist(aws_acm_certificate.keycloak_origin[0].domain_validation_options)[0].resource_record_name
+  type            = tolist(aws_acm_certificate.keycloak_origin[0].domain_validation_options)[0].resource_record_type
+  ttl             = 300
+  records         = [tolist(aws_acm_certificate.keycloak_origin[0].domain_validation_options)[0].resource_record_value]
+  allow_overwrite = true
+}
+
+resource "aws_acm_certificate_validation" "keycloak_origin" {
+  count = var.keycloak_domain_name != null ? 1 : 0
+
+  certificate_arn         = aws_acm_certificate.keycloak_origin[0].arn
+  validation_record_fqdns = [aws_route53_record.keycloak_origin_cert_validation[0].fqdn]
+}
+
+resource "aws_route53_record" "keycloak_origin" {
+  count = var.keycloak_domain_name != null ? 1 : 0
+
+  zone_id = var.regional_hosted_zone_id
+  name    = var.keycloak_domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.keycloak.dns_name
+    zone_id                = aws_lb.keycloak.zone_id
+    evaluate_target_health = true
+  }
+}
+
+# -----------------------------------------------------------------------------
 # Internet-facing ALB for Keycloak, reachable only from CloudFront.
 # -----------------------------------------------------------------------------
 
@@ -113,12 +175,12 @@ resource "aws_cloudfront_distribution" "keycloak" {
   price_class = "PriceClass_100"
 
   origin {
-    domain_name = aws_lb.keycloak.dns_name
+    domain_name = var.keycloak_domain_name != null ? var.keycloak_domain_name : aws_lb.keycloak.dns_name
     origin_id   = "keycloak-alb"
     custom_origin_config {
       http_port              = 80
       https_port             = 443
-      origin_protocol_policy = "http-only" # PoC; see file header
+      origin_protocol_policy = var.keycloak_domain_name != null ? "https-only" : "http-only" # HTTPS when a domain is configured; HTTP is the documented PoC fallback
       origin_ssl_protocols   = ["TLSv1.2"]
     }
   }

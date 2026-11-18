@@ -121,7 +121,11 @@ regional_cluster:
     rh_token_issuer: ""
     rh_token_jwks_url: ""
     rh_token_audience: ""
->>>>>>> f2dd0e25 (Phase 4 PoC: wire custom-authorizer config through the render pipeline)
+    # Custom hostname for the Keycloak ALB origin; enables the HTTPS
+    # CloudFront->ALB origin (ACM cert). Empty when the environment has no
+    # DNS domain, falling back to the documented HTTP origin.
+    keycloak_domain_name: "{% if dns.domain %}keycloak-origin.{{ deployment_name }}.{{ dns.domain }}{% endif %}"
+>>>>>>> 6ebd4384 (Phase 4 PoC: HTTPS CloudFront->ALB origin for Keycloak)
   # @doc regional_cluster.enable_bastion Enable bastion host for regional cluster access.
   # @used-by regional_cluster.enable_bastion pipeline-regional-cluster-inputs/terraform.json.j2
   enable_bastion: false
