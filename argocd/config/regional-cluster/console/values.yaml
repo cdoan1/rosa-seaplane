@@ -16,8 +16,8 @@ console:
   app:
     name: console
     image:
-      repository: quay.io/redhat-user-workloads/rosa-tenant/rosa-seaplane-api-console
-      tag: "latest"
+      repository: quay.io/cdoan0/rosa-seaplane-api-console
+      tag: "poc"
       pullPolicy: Always
     replicas: 1
     resources:
@@ -42,8 +42,8 @@ seaplane:
   project: default
 
   source:
-    repoURL: https://github.com/openshift-online/rosa-seaplane-api.git
-    targetRevision: main
+    repoURL: https://github.com/cdoan1/rosa-seaplane-api.git
+    targetRevision: poc-custom-authorizer
     path: console/charts
 
   syncPolicy:

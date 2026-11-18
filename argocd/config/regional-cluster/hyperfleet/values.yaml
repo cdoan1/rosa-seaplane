@@ -8,8 +8,8 @@ seaplane:
   project: default
 
   source:
-    repoURL: https://github.com/openshift-online/rosa-seaplane-api.git
-    targetRevision: aa468081b3e0148fccfb173dbf94a973da572ecf
+    repoURL: https://github.com/cdoan1/rosa-seaplane-api.git
+    targetRevision: poc-custom-authorizer
     path: seaplane-operator/charts
 
   syncPolicy:
@@ -19,8 +19,8 @@ seaplane:
 
   helmValues:
     image:
-      repository: quay.io/redhat-user-workloads/rosa-tenant/rosa-seaplane-operator
-      tag: "aa468081b3e0148fccfb173dbf94a973da572ecf@sha256:339a450cf31ec048ebf61312ce102ae9cdbbb35552a183c911be70e590eda9f4"
+      repository: quay.io/cdoan0/rosa-seaplane-operator
+      tag: "poc"
       pullPolicy: Always
 
     replicaCount: 2
