@@ -16,7 +16,7 @@ console:
   app:
     name: console
     image:
-      repository: quay.io/cdoan0/rosa-seaplane-api-console
+      repository: quay.io/cdoan0/rosa-seaplane-console
       tag: "poc"
       pullPolicy: Always
     replicas: 1
