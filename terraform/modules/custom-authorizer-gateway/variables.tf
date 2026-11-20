@@ -80,6 +80,12 @@ variable "linking_table_name" {
   description = "Explicit linking table name; defaults to <name>-links."
 }
 
+variable "enable_retention" {
+  type        = bool
+  default     = false
+  description = "Enable DynamoDB deletion protection on the linking table (mirrors authz-tables enable_retention). Off by default so PoC teardown works; production RCs set it true."
+}
+
 variable "public_subnet_ids" {
   type        = list(string)
   description = "Public subnets for the internet-facing Keycloak ALB."

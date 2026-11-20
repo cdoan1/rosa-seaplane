@@ -27,6 +27,10 @@ locals {
 
   # CORS defaults to the console's own origin (the browser only ever calls
   # the gateway from the console). Wildcard only when explicitly requested.
+  # TODO(production): the console origin is http:// on the public ALB
+  # (see console.tf) — HTTPS there requires moving this to https:// too.
+  # PoC simplification: tokens in flight are unencrypted on the console
+  # leg; acceptable only for the PoC, documented in the README.
   cors_allowed_origin = var.cors_allowed_origin != "" ? var.cors_allowed_origin : "http://${aws_lb.console.dns_name}"
 }
 
@@ -54,12 +58,22 @@ resource "aws_api_gateway_rest_api" "main" {
 # -----------------------------------------------------------------------------
 
 resource "aws_api_gateway_authorizer" "main" {
-  name                             = "${local.name}-authorizer"
-  rest_api_id                      = aws_api_gateway_rest_api.main.id
-  type                             = "REQUEST"
-  authorizer_uri                   = aws_lambda_function.authorizer.invoke_arn
-  identity_source                  = "method.request.header.Authorization"
-  authorizer_result_ttl_in_seconds = 0 # cache lives inside the Lambda, not the gateway
+  name            = "${local.name}-authorizer"
+  rest_api_id     = aws_api_gateway_rest_api.main.id
+  type            = "REQUEST"
+  authorizer_uri  = aws_lambda_function.authorizer.invoke_arn
+  identity_source = "method.request.header.Authorization"
+  # Gateway-level caching is disabled: the authorizer Lambda keeps an
+  # in-process decision cache (rosa-seaplane-api seaplane-authorizer,
+  # internal/authz: keyed on (token, arn), TTL = min(AUTHZ_CACHE_TTL,
+  # remaining token validity), so a cached decision never outlives its
+  # token). Every request still incurs a Lambda invocation, which is fine
+  # at PoC rates (single-digit rps).
+  # TODO(production): enable gateway-level authorizer caching with a
+  # 60-300s TTL once expected request rates are documented and the
+  # revocation story (link deletion invalidating cached decisions) is
+  # reconciled with the gateway cache window.
+  authorizer_result_ttl_in_seconds = 0
 }
 
 # -----------------------------------------------------------------------------
@@ -163,6 +177,37 @@ resource "aws_api_gateway_integration_response" "options_proxy" {
   depends_on = [aws_api_gateway_integration.options_proxy]
 }
 
+# The root path needs the same method/integration response pair as the
+# proxy path — without them the MOCK integration returns a bare 200 with
+# no CORS headers and browsers block the actual request after preflight.
+resource "aws_api_gateway_method_response" "options_root" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_rest_api.main.root_resource_id
+  http_method = aws_api_gateway_method.options_root.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
+
+resource "aws_api_gateway_integration_response" "options_root" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  resource_id = aws_api_gateway_rest_api.main.root_resource_id
+  http_method = aws_api_gateway_method.options_root.http_method
+  status_code = aws_api_gateway_method_response.options_root.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Authorization,Content-Type,X-Seaplane-Arn,X-Rh-Token'"
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'${local.cors_allowed_origin}'"
+  }
+
+  depends_on = [aws_api_gateway_integration.options_root]
+}
+
 # -----------------------------------------------------------------------------
 # Deployment and Stage
 # -----------------------------------------------------------------------------
@@ -183,6 +228,7 @@ resource "aws_api_gateway_deployment" "main" {
       aws_api_gateway_integration.options_proxy.id,
       aws_api_gateway_integration.options_root.id,
       aws_api_gateway_integration_response.options_proxy.id,
+      aws_api_gateway_integration_response.options_root.id,
     ]))
   }
 

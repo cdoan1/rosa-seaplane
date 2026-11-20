@@ -57,6 +57,9 @@ module "custom_authorizer_gateway" {
   rh_token_audience            = try(local.custom_authorizer.rh_token_audience, "")
   authorizer_cache_ttl_seconds = try(local.custom_authorizer.authorizer_cache_ttl_seconds, 300)
   linking_table_name           = local.custom_authorizer_linking_table_name
+  # Same retention toggle as the authz tables: deletion protection on the
+  # linking table whenever the RC runs its DynamoDB with retention.
+  enable_retention = var.authz_dynamodb_deletion_protection
 }
 
 # -----------------------------------------------------------------------------

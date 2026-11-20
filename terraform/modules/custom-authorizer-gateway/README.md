@@ -12,7 +12,29 @@ UI login flows design (`docs/preflight-and-ui-login-flows.md` /
 - The `seaplane-authorizer` Lambda (image built from rosa-seaplane-api)
   with a least-privilege role: read the linking table + logs
 - The **linking table** (D-T4 schema: PK `sub`, SK `arn`) — PoC-owned
-  here; production moves it to authz-storage with retention
+  here; production moves it to authz-storage with retention. Deletion
+  protection follows `enable_retention` (wired to
+  `authz_dynamodb_deletion_protection` by the regional config), so
+  production RCs cannot lose the org↔account mappings to an accidental
+  destroy; PITR and SSE are always on
+- The PoC **console ALB** (see security notes below)
+
+## Security notes (PoC limitations)
+
+- **Console ALB is HTTP-only, open to 0.0.0.0/0.** The PoC web console is
+  served over plain HTTP on a public internet-facing ALB. The PKCE token
+  exchange and the gateway's CORS `Access-Control-Allow-Origin`
+  (`http://<console-alb-dns>`) are both `http://`, so tokens are
+  **unencrypted in flight** on the browser↔console and browser↔gateway
+  legs. Acceptable for the PoC only. Before production: put CloudFront
+  with an ACM cert in front of the console (mirroring `keycloak.tf`),
+  redirect HTTP→HTTPS, and move the CORS origin to `https://`.
+- **Gateway authorizer caching is off.** `authorizer_result_ttl_in_seconds
+= 0`; every request invokes the Lambda. The Lambda keeps an in-process
+  decision cache (keyed `(token, arn)`, TTL bounded by token validity), so
+  this is a latency/cost concern only at load. Production should enable
+  gateway-level caching with a 60–300s TTL once request rates and the
+  link-revocation story are reconciled.
 
 ## Identity header parity
 

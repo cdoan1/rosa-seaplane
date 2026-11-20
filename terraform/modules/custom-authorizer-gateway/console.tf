@@ -9,6 +9,12 @@
 # PoC simplification: HTTP only (the PKCE redirect origin is the ALB DNS
 # name). Serve behind CloudFront with HTTPS + a custom domain before
 # anything beyond the PoC, mirroring the Keycloak exposure in keycloak.tf.
+#
+# TODO(production): this listener and the 0.0.0.0/0 ingress below serve
+# plain HTTP on a public ALB. The PKCE token exchange and the gateway's
+# CORS origin (main.tf, local.cors_allowed_origin) are both http://, so
+# tokens are unencrypted in flight. Fix by putting CloudFront with an ACM
+# cert in front (like keycloak.tf) and redirecting HTTP→HTTPS here.
 # =============================================================================
 
 resource "aws_lb" "console" {
@@ -70,11 +76,13 @@ resource "aws_security_group" "console_alb" {
 resource "aws_vpc_security_group_ingress_rule" "console_alb_http" {
   security_group_id = aws_security_group.console_alb.id
   description       = "Allow public HTTP to the PoC console"
-  ip_protocol       = "tcp"
-  from_port         = 80
-  to_port           = 80
-  cidr_ipv4         = "0.0.0.0/0"
-  tags              = local.common_tags
+  # TODO(production): 0.0.0.0/0 over plain HTTP — see the file header and
+  # the README security notes.
+  ip_protocol = "tcp"
+  from_port   = 80
+  to_port     = 80
+  cidr_ipv4   = "0.0.0.0/0"
+  tags        = local.common_tags
 }
 
 resource "aws_vpc_security_group_egress_rule" "console_alb_to_targets" {

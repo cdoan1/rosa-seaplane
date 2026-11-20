@@ -121,12 +121,14 @@ resource "aws_dynamodb_table" "linking" {
     projection_type = "ALL"
   }
 
-  # Point-in-time recovery is cheap insurance; deletion protection stays
-  # off so PoC teardown works (production enables it — poc-decisions D-T4).
+  # Point-in-time recovery is cheap insurance. Deletion protection is
+  # driven by enable_retention like the authz-tables module, so a
+  # production RC (retention on) cannot lose the org↔account identity
+  # mappings to an accidental terraform destroy (poc-decisions D-T4).
   point_in_time_recovery {
     enabled = true
   }
-  deletion_protection_enabled = false
+  deletion_protection_enabled = var.enable_retention
 
   tags = merge(local.common_tags, { Name = "${local.name}-links" })
 }
